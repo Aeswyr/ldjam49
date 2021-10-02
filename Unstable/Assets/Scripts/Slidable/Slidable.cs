@@ -32,12 +32,15 @@ namespace Unstable
         private CapsuleCollider m_collider;
         private GameObject m_projection;
 
+        private bool m_locked;
+
         #region Unity Callbacks
 
         private void Awake()
         {
             m_collider = this.GetComponent<CapsuleCollider>();
             m_projection = Instantiate(m_projectionPrefab, this.transform.parent);
+            m_locked = false;
         }
 
         /// <summary>
@@ -45,10 +48,9 @@ namespace Unstable
         /// </summary>
         private void Update()
         {
-            Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
+            if (m_locked) { return; }
 
-            float xSteepness = CalcSteepness(boardAngles.x);
-            float zSteepness = CalcSteepness(boardAngles.z);
+            Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
 
             SlideHorizontal(ref boardAngles);
             SlideVertical(ref boardAngles);
@@ -236,6 +238,20 @@ namespace Unstable
 
 
             return steepness;
+        }
+
+        #endregion
+
+        #region Getters and Setters
+
+        public bool IsLocked()
+        {
+            return m_locked;
+        }
+
+        public void SetLocked(bool locked)
+        {
+            m_locked = locked;
         }
 
         #endregion
