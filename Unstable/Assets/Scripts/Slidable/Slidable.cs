@@ -22,6 +22,10 @@ namespace Unstable
         private float m_skinWidth = 0.5f;
         [SerializeField]
         private float m_steepMod = 15;
+        [SerializeField]
+        private float m_fallBuffer = 0.1f;
+        [SerializeField]
+        private float m_fallSpeed = 20f;
 
         // Debugging
         [SerializeField]
@@ -50,15 +54,20 @@ namespace Unstable
         {
             if (m_locked) { return; }
 
+            // check for falling
+
+            if (CheckFall())
+            {
+                Fall();
+                return;
+            }
+
+            // sliding
+
             Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
 
             SlideHorizontal(ref boardAngles);
             SlideVertical(ref boardAngles);
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            Debug.Log("collision");
         }
 
         #endregion
@@ -238,6 +247,26 @@ namespace Unstable
 
 
             return steepness;
+        }
+
+        private bool CheckFall()
+        {
+            RaycastHit hit;
+            Physics.SphereCast(transform.position, m_collider.bounds.extents.z + m_fallBuffer, Vector3.down, out hit);
+
+            if (hit.collider == null
+                || (hit.collider.gameObject.layer == LayerMask.NameToLayer("Bounds")))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void Fall()
+        {
+            Vector3 fallMovement = Vector3.down * m_fallSpeed * Time.deltaTime;
+            transform.Translate(fallMovement);
         }
 
         #endregion
