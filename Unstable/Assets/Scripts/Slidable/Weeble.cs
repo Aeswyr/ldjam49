@@ -48,6 +48,7 @@ namespace Unstable
             float xSteepness = CalcSteepness(boardAngles.x);
             float zSteepness = CalcSteepness(boardAngles.z);
 
+            /*
             if (xSteepness > zSteepness)
             {
                 SlideVertical(ref boardAngles);
@@ -56,6 +57,10 @@ namespace Unstable
             {
                 SlideHorizontal(ref boardAngles);
             }
+            */
+
+            SlideHorizontal(ref boardAngles);
+            SlideVertical(ref boardAngles);
         }
 
         #endregion
