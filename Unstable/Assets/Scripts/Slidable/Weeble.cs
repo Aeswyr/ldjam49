@@ -62,40 +62,95 @@ namespace Unstable
 
         #region Member Functions
 
-        private void SlideVertical(ref Vector3 boardAngles)
+        private enum AngleDir
+        {
+            x,
+            z
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boardAngles"></param>
+        /// <param name="angleDir"></param>
+        private void Slide(ref Vector3 boardAngles, AngleDir angleDir)
         {
             // x rotation correlates to z movement
 
             Vector3 rawMovement = new Vector3(0, 0, 0);
             Vector3 rawDir = new Vector3(0, 0, 0);
 
-            if (boardAngles.x >= 360 - m_board.GetRotationLimit())
+            float boardAngle;
+
+            switch (angleDir)
+            {
+                case AngleDir.x:
+                    boardAngle = boardAngles.x;
+                    break;
+                case AngleDir.z:
+                    boardAngle = boardAngles.z;
+                    break;
+                default:
+                    boardAngle = 0;
+                    break;
+            }
+
+            if (boardAngle >= 360 - m_board.GetRotationLimit())
             {
                 // tilt up
 
-                if (boardAngles.x <= 360 - m_flatBuffer)
+                if (boardAngle <= 360 - m_flatBuffer)
                 {
-                    rawDir = new Vector3(0, 0, -1);
-                    // rawMovement = -transform.forward * Time.deltaTime;
+                    switch (angleDir)
+                    {
+                        case AngleDir.x:
+                            rawDir = new Vector3(0, 0, -1);
+                            break;
+                        case AngleDir.z:
+                            rawDir = new Vector3(1, 0, 0);
+                            break;
+                        default:
+                            break;
+                    }
                     rawMovement = rawDir * m_slideSpeed * Time.deltaTime;
-                    // transform.localPosition += new Vector3(0, 0, 1) * m_slideSpeed * Time.deltaTime;
-                    //Debug.DrawLine(transform.position, transform.position + -transform.forward * Time.deltaTime);
                 }
             }
-            else if (boardAngles.x >= 0 + m_flatBuffer)
+            else if (boardAngle >= 0 + m_flatBuffer)
             {
                 // tilt down
 
-                rawDir = new Vector3(0, 0, 1);
-                //rawMovement = transform.forward * Time.deltaTime;
+                switch (angleDir)
+                {
+                    case AngleDir.x:
+                        rawDir = new Vector3(0, 0, 1);
+                        break;
+                    case AngleDir.z:
+                        rawDir = new Vector3(-1, 0, 0);
+                        break;
+                    default:
+                        break;
+                }
                 rawMovement = rawDir * m_slideSpeed * Time.deltaTime;
-                //transform.localPosition += new Vector3(0, 0, -1) * m_slideSpeed * Time.deltaTime;
-                //Debug.DrawLine(transform.position, transform.position + transform.forward * Time.deltaTime);
             }
 
             // project the new transform.position
             m_projection.transform.position = this.transform.position;
-            m_projection.transform.localPosition += rawMovement + rawDir * m_collider.bounds.extents.z;
+
+            float extents;
+            switch (angleDir)
+            {
+                case AngleDir.x:
+                    extents = m_collider.bounds.extents.z;
+                    break;
+                case AngleDir.z:
+                    extents = m_collider.bounds.extents.x;
+                    break;
+                default:
+                    extents = 0;
+                    break;
+            }
+
+            m_projection.transform.localPosition += m_skinWidth * /*rawMovement +*/ rawDir * extents;
 
             // raycast for obstacles
             Vector3 adjustedMovement = rawMovement;
@@ -126,33 +181,41 @@ namespace Unstable
                 }
             }
 
+            // adjust movement if obstacle would be hit
             if (closestHit.collider != null)
             {
-                Debug.Log("Collided");
-                Vector3 newDest = transform.position; //closestHit.collider.ClosestPoint(m_projection.transform.position) + -dir.normalized * m_skinWidth;
+                Vector3 buffer = -dir.normalized * m_skinWidth;
+                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
                 adjustedMovement = newDest - transform.position;
+                adjustedMovement.y = 0;
             }
 
             transform.localPosition += adjustedMovement;
         }
 
-        private void SlideHorizontal(ref Vector3 boardAngles)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boardAngles"></param>
+        private void SlideVertical(ref Vector3 boardAngles)
         {
-            // z rotation correlates to x movement
-
-            if (boardAngles.z >= 360 - m_board.GetRotationLimit())
-            {
-                if (boardAngles.z <= 360 - m_flatBuffer)
-                {
-                    transform.localPosition += new Vector3(1, 0, 0) * m_slideSpeed * Time.deltaTime;
-                }
-            }
-            else if (boardAngles.z >= 0 + m_flatBuffer)
-            {
-                transform.localPosition += new Vector3(-1, 0, 0) * m_slideSpeed * Time.deltaTime;
-            }
+            Slide(ref boardAngles, AngleDir.x);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boardAngles"></param>
+        private void SlideHorizontal(ref Vector3 boardAngles)
+        {
+            Slide(ref boardAngles, AngleDir.z);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         private float CalcSteepness(float angle)
         {
             float steepest = 0;
