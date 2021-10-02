@@ -8,20 +8,20 @@ namespace Unstable
     /// An object that slides across the board
     /// </summary>
     [RequireComponent(typeof(CapsuleCollider))]
-    public class Weeble : MonoBehaviour
+    public class Slidable : MonoBehaviour
     {
         #region Inspector
 
         [SerializeField]
         private BoardController m_board;
         [SerializeField]
-        private float m_slideSpeed;
+        private float m_slideSpeed = 3;
         [SerializeField]
-        private float m_flatBuffer; // how far tilted the board must be before this slides
+        private float m_flatBuffer = 1.5f; // how far tilted the board must be before this slides
         [SerializeField]
-        private float m_skinWidth;
+        private float m_skinWidth = 0.5f;
         [SerializeField]
-        private float m_steepMod;
+        private float m_steepMod = 15;
 
         // Debugging
         [SerializeField]
@@ -52,6 +52,11 @@ namespace Unstable
 
             SlideHorizontal(ref boardAngles);
             SlideVertical(ref boardAngles);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log("collision");
         }
 
         #endregion
