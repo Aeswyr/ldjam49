@@ -20,6 +20,8 @@ namespace Unstable
         private float m_flatBuffer; // how far tilted the board must be before this slides
         [SerializeField]
         private float m_skinWidth;
+        [SerializeField]
+        private float m_steepMod;
 
         // Debugging
         [SerializeField]
@@ -48,17 +50,6 @@ namespace Unstable
             float xSteepness = CalcSteepness(boardAngles.x);
             float zSteepness = CalcSteepness(boardAngles.z);
 
-            /*
-            if (xSteepness > zSteepness)
-            {
-                SlideVertical(ref boardAngles);
-            }
-            else
-            {
-                SlideHorizontal(ref boardAngles);
-            }
-            */
-
             SlideHorizontal(ref boardAngles);
             SlideVertical(ref boardAngles);
         }
@@ -83,9 +74,9 @@ namespace Unstable
             Vector3 rawMovement = new Vector3(0, 0, 0);
             Vector3 rawDir = new Vector3(0, 0, 0);
 
-            float boardAngle;
-
             // x rotation correlates to z movement and vice versa
+
+            float boardAngle;
             switch (angleDir)
             {
                 case AngleDir.x:
@@ -99,9 +90,11 @@ namespace Unstable
                     break;
             }
 
+            float steepness = CalcSteepness(boardAngle);
+
             if (boardAngle >= 360 - m_board.GetRotationLimit())
             {
-                // tilt up
+                // tilt up/left
 
                 if (boardAngle <= 360 - m_flatBuffer)
                 {
@@ -116,12 +109,12 @@ namespace Unstable
                         default:
                             break;
                     }
-                    rawMovement = rawDir * m_slideSpeed * Time.deltaTime;
+                    rawMovement = rawDir * m_slideSpeed * (steepness / m_steepMod) * Time.deltaTime;
                 }
             }
             else if (boardAngle >= 0 + m_flatBuffer)
             {
-                // tilt down
+                // tilt down/right
 
                 switch (angleDir)
                 {
@@ -134,7 +127,7 @@ namespace Unstable
                     default:
                         break;
                 }
-                rawMovement = rawDir * m_slideSpeed * Time.deltaTime;
+                rawMovement = rawDir * m_slideSpeed * (steepness / m_steepMod) * Time.deltaTime;
             }
 
             // project the new transform.position
@@ -154,12 +147,13 @@ namespace Unstable
                     break;
             }
 
-            m_projection.transform.localPosition += m_skinWidth * /*rawMovement +*/ rawDir * extents;
+            m_projection.transform.localPosition += m_skinWidth * rawDir * extents;
 
             // raycast for obstacles
             Vector3 adjustedMovement = rawMovement;
 
             Vector3 dir = m_projection.transform.position - this.transform.position;
+
             Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
 
             RaycastHit[] hits;
@@ -222,20 +216,21 @@ namespace Unstable
         /// <returns></returns>
         private float CalcSteepness(float angle)
         {
-            float steepest = 0;
+            float steepness = 0;
 
             int limit = m_board.GetRotationLimit();
 
-            if (angle < limit)
+            if ((int)angle <= limit)
             {
-                steepest = angle;
+                steepness = angle;
             }
             else
             {
-                steepest = 360 - angle;
+                steepness = 360 - angle;
             }
 
-            return steepest;
+
+            return steepness;
         }
 
         #endregion
