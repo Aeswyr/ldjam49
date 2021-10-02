@@ -35,7 +35,10 @@ namespace Unstable
 
         private CapsuleCollider m_collider;
         private GameObject m_projection;
+        private Slidable m_slidable;
         private Tile m_currTile;
+        private Tile m_prevTile;
+        private bool m_shunting;
 
         private bool m_locked;
 
@@ -45,7 +48,9 @@ namespace Unstable
         {
             m_collider = this.GetComponent<CapsuleCollider>();
             m_projection = Instantiate(m_projectionPrefab, this.transform.parent);
+            m_slidable = this.GetComponent<Slidable>();
             m_locked = false;
+            m_shunting = false;
         }
 
         /// <summary>
@@ -69,22 +74,18 @@ namespace Unstable
 
             if (m_currTile != null)
             {
-                Tile.Type type = m_currTile.GetTileType();
-
-                switch (type)
+                if (m_prevTile == null)
                 {
-                    case (Tile.Type.wood):
-                        m_currTile.GetComponent<WoodTile>().ApplyEffect();
-                        break;
-                    case (Tile.Type.ice):
-                        m_currTile.GetComponent<IceTile>().ApplyEffect();
-                        break;
-                    case (Tile.Type.puddle):
-                        m_currTile.GetComponent<PuddleTile>().ApplyEffect();
-                        break;
-                    default:
-                        break;
+                    EnterCurrTile();
                 }
+                else if (m_currTile.GetTileType() != m_prevTile.GetTileType())
+                {
+                    ExitPrevTile();
+
+                    EnterCurrTile();
+                }
+
+                m_prevTile = m_currTile;
             }
 
             Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
@@ -297,13 +298,74 @@ namespace Unstable
             RaycastHit hit;
             Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit);
 
-            if (hit.collider != null 
+            if (hit.collider != null
                 && (hit.collider.gameObject.layer == LayerMask.NameToLayer("Tile")))
             {
                 return hit.collider.gameObject.GetComponent<Tile>();
             }
 
             return null;
+        }
+
+        private void ExitPrevTile()
+        {
+            var prevType = m_prevTile.GetTileType();
+            switch (prevType)
+            {
+                case (Tile.Type.wood):
+                    // deregister wood effect
+                    m_prevTile.GetComponent<WoodTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.ice):
+                    // deregister ice effect
+                    m_prevTile.GetComponent<IceTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.puddle):
+                    // deregister puddle effect
+                    m_prevTile.GetComponent<PuddleTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.none):
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void EnterCurrTile()
+        {
+            var currType = m_currTile.GetTileType();
+            switch (currType)
+            {
+                case (Tile.Type.wood):
+                    // register wood effect
+                    m_currTile.GetComponent<WoodTile>().OnEnter(ref m_slidable);
+                    break;
+                case (Tile.Type.ice):
+                    // register ice effect
+                    m_currTile.GetComponent<IceTile>().OnEnter(ref m_slidable);
+                    break;
+                case (Tile.Type.puddle):
+                    // register puddle effect
+                    m_currTile.GetComponent<PuddleTile>().OnEnter(ref m_slidable);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void MultiplySlideSpeed(float factor)
+        {
+            m_slideSpeed *= factor;
+        }
+
+        public void Shunt()
+        {
+            m_shunting = true;
+        }
+
+        public void EndShunt()
+        {
+            m_shunting = false;
         }
 
         #endregion
