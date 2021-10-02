@@ -75,13 +75,12 @@ namespace Unstable
         /// <param name="angleDir"></param>
         private void Slide(ref Vector3 boardAngles, AngleDir angleDir)
         {
-            // x rotation correlates to z movement
-
             Vector3 rawMovement = new Vector3(0, 0, 0);
             Vector3 rawDir = new Vector3(0, 0, 0);
 
             float boardAngle;
 
+            // x rotation correlates to z movement and vice versa
             switch (angleDir)
             {
                 case AngleDir.x:
