@@ -35,6 +35,7 @@ namespace Unstable
 
         private CapsuleCollider m_collider;
         private GameObject m_projection;
+        private Tile m_currTile;
 
         private bool m_locked;
 
@@ -62,7 +63,29 @@ namespace Unstable
                 return;
             }
 
-            // sliding
+            // tile influence
+
+            m_currTile = IdentifyCurrTile();
+
+            if (m_currTile != null)
+            {
+                Tile.Type type = m_currTile.GetTileType();
+
+                switch (type)
+                {
+                    case (Tile.Type.wood):
+                        m_currTile.GetComponent<WoodTile>().ApplyEffect();
+                        break;
+                    case (Tile.Type.ice):
+                        m_currTile.GetComponent<IceTile>().ApplyEffect();
+                        break;
+                    case (Tile.Type.puddle):
+                        m_currTile.GetComponent<PuddleTile>().ApplyEffect();
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
 
@@ -267,6 +290,20 @@ namespace Unstable
         {
             Vector3 fallMovement = Vector3.down * m_fallSpeed * Time.deltaTime;
             transform.Translate(fallMovement);
+        }
+
+        private Tile IdentifyCurrTile()
+        {
+            RaycastHit hit;
+            Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit);
+
+            if (hit.collider != null 
+                && (hit.collider.gameObject.layer == LayerMask.NameToLayer("Tile")))
+            {
+                return hit.collider.gameObject.GetComponent<Tile>();
+            }
+
+            return null;
         }
 
         #endregion
