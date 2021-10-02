@@ -159,7 +159,7 @@ namespace Unstable
 
             RaycastHit[] hits;
 
-            hits = Physics.RaycastAll(transform.position, dir, dir.magnitude);
+            hits = Physics.RaycastAll(m_projection.transform.position, dir, dir.magnitude);
 
             RaycastHit closestHit = new RaycastHit();
 

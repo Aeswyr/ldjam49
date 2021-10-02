@@ -448,7 +448,7 @@ MonoBehaviour:
   m_board: {fileID: 1110283363}
   m_slideSpeed: 3
   m_flatBuffer: 10
-  m_skinWidth: 1
+  m_skinWidth: 0.5
   m_projectionPrefab: {fileID: 492403744433118940, guid: e4ad7df72dfa96d46b9c2b38e3d29947,
     type: 3}
 --- !u!1 &653682870
