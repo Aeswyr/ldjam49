@@ -54,6 +54,11 @@ namespace Unstable
             SlideVertical(ref boardAngles);
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log("collision");
+        }
+
         #endregion
 
         #region Member Functions
