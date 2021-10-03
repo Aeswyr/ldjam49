@@ -9,9 +9,6 @@ public class ObjectTileSpawner : MonoBehaviour
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private Transform parentObj;
 
-    [Header("Settings")]
-    [SerializeField] private bool SpawnTilesOnStart;
-
     [Header("3D Tile Prefabs")]
     [SerializeField] private GameObject woodTile3D;
     [SerializeField] private GameObject iceTile3D;
@@ -26,7 +23,7 @@ public class ObjectTileSpawner : MonoBehaviour
 
     private void Start()
     {
-        if (SpawnTilesOnStart)
+        if (parentObj.childCount == 0)
             SpawnTiles();
     }
 
