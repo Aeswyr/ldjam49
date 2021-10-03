@@ -24,14 +24,15 @@ namespace Unstable
 
         public void OnEnter(ref Slidable slidable)
         {
-            Debug.Log("Entered puddle tile.");
             slidable.Shunt();
+            slidable.MultiplySlideSpeed(0.5f);
         }
 
         public void OnExit(ref Slidable slidable)
         {
-            Debug.Log("Exited puddle tile.");
-            slidable.EndShunt();
+            // now called when timer ends / collision occurs
+            // slidable.EndShunt();
+            slidable.MultiplySlideSpeed(2f);
         }
 
         #endregion

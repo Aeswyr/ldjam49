@@ -23,13 +23,11 @@ namespace Unstable
 
         public void OnEnter(ref Slidable slidable)
         {
-            Debug.Log("Entered ice tile.");
             slidable.MultiplySlideSpeed(2f);
         }
 
         public void OnExit(ref Slidable slidable)
         {
-            Debug.Log("Exited ice tile.");
             slidable.MultiplySlideSpeed(0.5f);
         }
 

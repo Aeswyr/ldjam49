@@ -23,12 +23,10 @@ namespace Unstable
 
         public void OnEnter(ref Slidable slidable)
         {
-            Debug.Log("Entered wood tile.");
         }
 
         public void OnExit(ref Slidable slidable)
         {
-            Debug.Log("Exited wood tile.");
         }
 
         #endregion

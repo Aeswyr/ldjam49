@@ -26,6 +26,10 @@ namespace Unstable
         private float m_fallBuffer = 0.1f;
         [SerializeField]
         private float m_fallSpeed = 20f;
+        [SerializeField]
+        private float m_shuntSlideSpeed = 20;
+        [SerializeField]
+        private float m_shuntMinTime = 1f;
 
         // Debugging
         [SerializeField]
@@ -39,6 +43,8 @@ namespace Unstable
         private Tile m_currTile;
         private Tile m_prevTile;
         private bool m_shunting;
+        private Vector3 m_shuntDir;
+        private float m_shuntCountdown;
 
         private bool m_locked;
 
@@ -78,7 +84,7 @@ namespace Unstable
                 {
                     EnterCurrTile();
                 }
-                else if (m_currTile.GetTileType() != m_prevTile.GetTileType())
+                else if (m_currTile != m_prevTile)
                 {
                     ExitPrevTile();
 
@@ -88,6 +94,21 @@ namespace Unstable
                 m_prevTile = m_currTile;
             }
 
+            if (m_shunting)
+            {
+                ShuntSlide();
+
+                m_shuntCountdown -= Time.deltaTime;
+
+                if (m_shuntCountdown <= 0)
+                {
+                    EndShunt();
+                }
+
+                // return; //todo: remove this to add complex movement functionality
+            }
+
+            // default slide behavior
             Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
 
             SlideHorizontal(ref boardAngles);
@@ -194,7 +215,7 @@ namespace Unstable
 
             Vector3 dir = m_projection.transform.position - this.transform.position;
 
-            Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
+            // Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
 
             RaycastHit[] hits;
 
@@ -247,6 +268,71 @@ namespace Unstable
         private void SlideHorizontal(ref Vector3 boardAngles)
         {
             Slide(ref boardAngles, AngleDir.z);
+        }
+
+        private void ShuntSlide()
+        {
+            // slide toward ShuntDir
+
+            Vector3 rawMovement = new Vector3(0, 0, 0);
+            Vector3 rawDir = m_shuntDir;
+
+
+            // x rotation correlates to z movement and vice versa
+
+            rawMovement = rawDir * m_shuntSlideSpeed * Time.deltaTime;
+
+            // project the new transform.position
+            m_projection.transform.position = this.transform.position;
+
+            Vector3 extents = m_collider.bounds.extents;
+
+            m_projection.transform.localPosition += m_skinWidth * rawDir * ((extents.x + extents.z) / 2);
+
+            // raycast for obstacles
+            Vector3 adjustedMovement = rawMovement;
+
+            Vector3 dir = m_projection.transform.position - this.transform.position;
+
+            Debug.DrawLine(transform.position, m_projection.transform.position + dir * 50, Color.blue);
+
+            RaycastHit[] hits;
+
+            hits = Physics.RaycastAll(m_projection.transform.position, dir, dir.magnitude);
+
+            RaycastHit closestHit = new RaycastHit();
+
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Barrier"))
+                {
+                    continue;
+                }
+
+                if (hit.Equals(hits[0]))
+                {
+                    closestHit = hit;
+                }
+                else if (hit.distance < closestHit.distance)
+                {
+                    closestHit = hit;
+                }
+            }
+
+            // adjust movement if obstacle would be hit
+            if (closestHit.collider != null)
+            {
+                Vector3 buffer = -dir.normalized * m_skinWidth;
+                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
+                adjustedMovement = newDest - transform.position;
+                adjustedMovement.y = 0;
+
+                // end shunt when collide with a barrier
+                EndShunt();
+            }
+
+            // TODO: make this Translate()
+            transform.localPosition += adjustedMovement;
         }
 
         /// <summary>
@@ -361,11 +447,20 @@ namespace Unstable
         public void Shunt()
         {
             m_shunting = true;
+            m_shuntCountdown = m_shuntMinTime;
+
+            // randomly generate a direction
+            float shuntX = Random.Range(-1f, 1f);
+            float shuntZ = Random.Range(-1f, 1f);
+
+            m_shuntDir = new Vector3(shuntX, 0, shuntZ);
         }
 
         public void EndShunt()
         {
             m_shunting = false;
+            m_shuntDir = Vector3.zero;
+            m_shuntCountdown = 0;
         }
 
         #endregion
