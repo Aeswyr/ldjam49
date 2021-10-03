@@ -30,6 +30,8 @@ namespace Unstable
         private float m_shuntSlideSpeed = 20;
         [SerializeField]
         private float m_shuntMinTime = 1f;
+        [SerializeField]
+        private int m_ray_dimension = 3;
 
         // Debugging
         [SerializeField]
@@ -45,6 +47,7 @@ namespace Unstable
         private bool m_shunting;
         private Vector3 m_shuntDir;
         private float m_shuntCountdown;
+        private float m_barrierbuffer;
 
         private bool m_locked;
 
@@ -57,6 +60,9 @@ namespace Unstable
             m_slidable = this.GetComponent<Slidable>();
             m_locked = false;
             m_shunting = false;
+            m_barrierbuffer = m_skinWidth + 0.1f;
+
+            // m_board = BoardController.instance;
 
             if (m_board == null)
                 m_board = GameObject.Find("Board").GetComponent<BoardController>();
@@ -125,7 +131,8 @@ namespace Unstable
         private enum AngleDir
         {
             x,
-            z
+            z,
+            shunt
         }
 
         /// <summary>
@@ -194,64 +201,15 @@ namespace Unstable
                 rawMovement = rawDir * m_slideSpeed * (steepness / m_steepMod) * Time.deltaTime;
             }
 
-            // project the new transform.position
-            m_projection.transform.position = this.transform.position;
-
-            float extents;
-            switch (angleDir)
-            {
-                case AngleDir.x:
-                    extents = m_collider.bounds.extents.z;
-                    break;
-                case AngleDir.z:
-                    extents = m_collider.bounds.extents.x;
-                    break;
-                default:
-                    extents = 0;
-                    break;
-            }
-
-            m_projection.transform.localPosition += m_skinWidth * rawDir * extents;
+            Vector3 adjustedMovement = rawMovement;
+            Vector3 projectionDir = Vector3.zero;
 
             // raycast for obstacles
-            Vector3 adjustedMovement = rawMovement;
+            RaycastHit closestHit = CollisionRaycast(angleDir, rawDir, rawMovement, ref projectionDir);
 
-            Vector3 dir = m_projection.transform.position - this.transform.position;
+            AdjustMovement(ref adjustedMovement, ref closestHit, false);
 
-            // Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
-
-            RaycastHit[] hits;
-
-            hits = Physics.RaycastAll(m_projection.transform.position, dir, dir.magnitude);
-
-            RaycastHit closestHit = new RaycastHit();
-
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Barrier"))
-                {
-                    continue;
-                }
-
-                if (hit.Equals(hits[0]))
-                {
-                    closestHit = hit;
-                }
-                else if (hit.distance < closestHit.distance)
-                {
-                    closestHit = hit;
-                }
-            }
-
-            // adjust movement if obstacle would be hit
-            if (closestHit.collider != null)
-            {
-                Vector3 buffer = -dir.normalized * m_skinWidth;
-                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
-                adjustedMovement = newDest - transform.position;
-                adjustedMovement.y = 0;
-            }
-
+            // move to new position
             transform.localPosition += adjustedMovement;
         }
 
@@ -278,64 +236,46 @@ namespace Unstable
             // slide toward ShuntDir
 
             Vector3 rawMovement = new Vector3(0, 0, 0);
-            Vector3 rawDir = m_shuntDir;
-
+            Vector3 rawDir = m_shuntDir.normalized;
 
             // x rotation correlates to z movement and vice versa
 
             rawMovement = rawDir * m_shuntSlideSpeed * Time.deltaTime;
 
-            // project the new transform.position
-            m_projection.transform.position = this.transform.position;
-
-            Vector3 extents = m_collider.bounds.extents;
-
-            m_projection.transform.localPosition += m_skinWidth * rawDir * ((extents.x + extents.z) / 2);
+            Vector3 adjustedMovement = rawMovement;
+            Vector3 projectionDir = Vector3.zero;
 
             // raycast for obstacles
-            Vector3 adjustedMovement = rawMovement;
+            RaycastHit closestHit = CollisionRaycast(AngleDir.shunt, rawDir, rawMovement, ref projectionDir);
 
-            Vector3 dir = m_projection.transform.position - this.transform.position;
+            AdjustMovement(ref adjustedMovement, ref closestHit, true);
 
-            Debug.DrawLine(transform.position, m_projection.transform.position + dir * 50, Color.blue);
+            // move to new position
+            transform.localPosition += adjustedMovement;
+        }
 
-            RaycastHit[] hits;
-
-            hits = Physics.RaycastAll(m_projection.transform.position, dir, dir.magnitude);
-
-            RaycastHit closestHit = new RaycastHit();
-
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Barrier"))
-                {
-                    continue;
-                }
-
-                if (hit.Equals(hits[0]))
-                {
-                    closestHit = hit;
-                }
-                else if (hit.distance < closestHit.distance)
-                {
-                    closestHit = hit;
-                }
-            }
-
+        private void AdjustMovement(ref Vector3 adjustedMovement, ref RaycastHit closestHit, bool shunting)
+        {
             // adjust movement if obstacle would be hit
             if (closestHit.collider != null)
             {
-                Vector3 buffer = -dir.normalized * m_skinWidth;
+                /*
+                Vector3 buffer = -projectionDir.normalized * m_skinWidth;
                 Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
                 adjustedMovement = newDest - transform.position;
                 adjustedMovement.y = 0;
+                */
+                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position);
+                Vector3 bufferDir = (this.transform.position - newDest).normalized;
+                adjustedMovement = newDest + (bufferDir * m_barrierbuffer) - transform.position;
+                adjustedMovement.y = 0;
 
-                // end shunt when collide with a barrier
-                EndShunt();
+                if (shunting)
+                {
+                    //end shunt when collide with a barrier
+                    EndShunt();
+                }
             }
-
-            // TODO: make this Translate()
-            transform.localPosition += adjustedMovement;
         }
 
         /// <summary>
@@ -362,13 +302,113 @@ namespace Unstable
             return steepness;
         }
 
+        private RaycastHit CollisionRaycast(AngleDir angleDir, Vector3 rawDir, Vector3 rawMovement, ref Vector3 projectionDir)
+        {
+            // project the new transform.position
+            m_projection.transform.position = this.transform.position;
+
+            // determine how to place projection on outside of collider where facing
+            Bounds bounds = m_collider.bounds;
+            Vector3 extents;
+            switch (angleDir)
+            {
+                case AngleDir.x:
+                    extents = rawDir * bounds.extents.z;
+                    break;
+                case AngleDir.z:
+                    extents = rawDir * bounds.extents.x;
+                    break;
+                case AngleDir.shunt:
+                    extents = rawDir * (bounds.extents.z + bounds.extents.x) / 2;
+                    break;
+                default:
+                    extents = Vector3.zero;
+                    break;
+            }
+
+            // projection used to get absolute vector for local position change
+
+            m_projection.transform.localPosition +=
+                // m_skinWidth * // buffer ratio
+                rawDir // direction facing
+                // + extents // distance from middle to edge of collider
+                ;
+
+            Vector3 start = transform.position;
+            projectionDir = m_projection.transform.position - this.transform.position;
+
+            Vector3 raySpacing = CalcRaySpacing();
+            Vector3 startMod = new Vector3(
+                bounds.extents.x * projectionDir.normalized.x,
+                bounds.extents.y * projectionDir.normalized.y,
+                bounds.extents.z * projectionDir.normalized.z
+                );
+            Vector3 rayStarts = start + startMod; // pushes all rays to lowest edge
+
+            // cast a ray at each interval from lowest to highest edge
+
+            RaycastHit closestHit = new RaycastHit();
+
+            for (int i = 0; i < m_ray_dimension; ++i)
+            {
+                Ray collisionRay = new Ray(rayStarts + raySpacing * i, projectionDir);
+
+                Debug.DrawLine(collisionRay.origin, collisionRay.origin + collisionRay.direction, Color.blue);
+
+                RaycastHit hit;
+
+                float maxDistance = projectionDir.magnitude;
+                Physics.Raycast(collisionRay, out hit, maxDistance, LayerMask.GetMask("Barrier"));
+
+                if (closestHit.collider == null)
+                {
+                    closestHit = hit;
+                }
+                else if (hit.distance < closestHit.distance)
+                {
+                    closestHit = hit;
+                }
+            }
+
+            return closestHit;
+
+            /*
+
+            RaycastHit closestHit = new RaycastHit();
+
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.Equals(hits[0]))
+                {
+                    closestHit = hit;
+                }
+                else if (hit.distance < closestHit.distance)
+                {
+                    closestHit = hit;
+                }
+            }
+
+            return closestHit;
+
+            */
+        }
+
+        private Vector3 CalcRaySpacing()
+        {
+            Vector3 extents = m_collider.bounds.extents;
+
+            float verticalSpacing = extents.y / m_ray_dimension;
+
+            // only vertical currently implemented
+            return new Vector3(0, verticalSpacing, 0);
+        }
+
         private bool CheckFall()
         {
             RaycastHit hit;
-            Physics.SphereCast(transform.position, m_collider.bounds.extents.z + m_fallBuffer, Vector3.down, out hit);
+            Physics.SphereCast(transform.position, m_collider.bounds.extents.z + m_fallBuffer, Vector3.down, out hit, LayerMask.GetMask("Bounds"));
 
-            if (hit.collider == null
-                || (hit.collider.gameObject.layer == LayerMask.NameToLayer("Bounds")))
+            if (hit.collider == null)
             {
                 return true;
             }
@@ -385,10 +425,9 @@ namespace Unstable
         private Tile IdentifyCurrTile()
         {
             RaycastHit hit;
-            Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit);
+            Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit, LayerMask.GetMask("Tile"));
 
-            if (hit.collider != null
-                && (hit.collider.gameObject.layer == LayerMask.NameToLayer("Tile")))
+            if (hit.collider != null)
             {
                 return hit.collider.gameObject.GetComponent<Tile>();
             }
