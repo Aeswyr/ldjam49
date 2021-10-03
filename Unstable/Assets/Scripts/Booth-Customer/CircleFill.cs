@@ -22,7 +22,7 @@ public class CircleFill : MonoBehaviour
 
     public void UpdateFill(float fillPercent)
     {
-        Debug.Log("Fill updated to: " + fillPercent);
+        //Debug.Log("Fill updated to: " + fillPercent);
 
         rightCover.localEulerAngles = new Vector3(0, 0, Mathf.Max(-180, fillPercent * -360));
 

@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
+    [System.Serializable]
+    public struct customerStruct
+    {
+        public float spawnTime;
+
+        public FoodObject desiredFood;
+        public float timeTakenToEat;
+    }
+
     [Header("Level Settings + Objects")]
-    [SerializeField] private int numberOfTotalCustomers;
-    [SerializeField] private List<FoodObject> foodObjects;
-    [SerializeField] private bool spawnNewCustomerAfterEating;
+    [SerializeField] private List<customerStruct> customersToSpawn;
+    [SerializeField] private float[] starThresholds = new float[5];
+    //[SerializeField] private List<FoodObject> foodObjects;
+    //[SerializeField] private bool spawnNewCustomerAfterEating;
 
     [Header("Object References + Prefabs")]
     [SerializeField] private Booth[] booths;
@@ -18,68 +28,88 @@ public class LevelController : MonoBehaviour
     [SerializeField] private GameObject customerPrefab;
     [SerializeField] private EndLevelCanvas endLevelCanvas;
 
-    private int customersSpawned;
-    private int customersFed;
+    private int numberOfTotalCustomers;
+    private int numCustomersSpawned;
+    private int numCustomersFed;
     private int score;
+    private float timeSinceGameStarted;
 
     // Start is called before the first frame update
     void Start()
     {
-        customersSpawned = 0;
-        customersFed = 0;
+        numberOfTotalCustomers = customersToSpawn.Count;
+        numCustomersSpawned = 0;
+        numCustomersFed = 0;
         score = 0;
 
-        List<FoodObject> foodObjectCopy = new List<FoodObject>(foodObjects);
+        // List<FoodObject> foodObjectCopy = new List<FoodObject>(foodObjects);
 
         foreach(Booth booth in booths)
         {
-            int randFoodIndex = Random.Range(0, foodObjectCopy.Count);
-            booth.SetFood(foodObjectCopy[randFoodIndex]);
+            //int randFoodIndex = Random.Range(0, foodObjectCopy.Count);
+            //booth.SetFood(foodObjectCopy[randFoodIndex]);
             booth.levelController = this;
 
-            foodObjectCopy.RemoveAt(randFoodIndex);
+            //foodObjectCopy.RemoveAt(randFoodIndex);
         }
 
-        SpawnCustomer();
+        //SpawnCustomer(); 
+    }
+
+    public void OnValidate()
+    {
+        customersToSpawn.Sort((a, b) => a.spawnTime.CompareTo(b.spawnTime));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (numCustomersSpawned >= numberOfTotalCustomers)
+            return;
+
+        timeSinceGameStarted += Time.deltaTime;
+        if (timeSinceGameStarted >= customersToSpawn[numCustomersSpawned].spawnTime)
+            SpawnCustomer();
     }
 
     public void SpawnCustomer()
     {
-        if (customersSpawned >= numberOfTotalCustomers)
+        if (numCustomersSpawned >= numberOfTotalCustomers)
             return;
 
         GameObject newCustomer = Instantiate(customerPrefab, customerParent);
         newCustomer.transform.position = customerSpawnLocation.position;
 
-        FoodObject foodToEat = foodObjects[Random.Range(0,foodObjects.Count)];
-        float eatTime = Random.Range(2f, 5f);
+        //FoodObject foodToEat = foodObjects[Random.Range(0,foodObjects.Count)];
+        //float eatTime = Random.Range(2f, 5f);
 
-        newCustomer.GetComponent<Customer>().SetValues(foodToEat, eatTime);
+        newCustomer.GetComponent<Customer>().SetValues(customersToSpawn[numCustomersSpawned].desiredFood, customersToSpawn[numCustomersSpawned].timeTakenToEat);
 
-        customersSpawned++;
+        numCustomersSpawned++;
     }
 
     public void CustomerFed(int pointsToAdd)
     {
-        customersFed++;
+        numCustomersFed++;
         score += pointsToAdd;
 
-        if (customersFed >= numberOfTotalCustomers)
+        if (numCustomersFed >= numberOfTotalCustomers)
             LevelEnd();
 
-        if (spawnNewCustomerAfterEating)
-            SpawnCustomer();
+        //if (spawnNewCustomerAfterEating)
+          //  SpawnCustomer();
     }
 
     public void LevelEnd()
     {
         endLevelCanvas.gameObject.SetActive(true);
         endLevelCanvas.SetDisplayScore(score);
+        int numStars = 0;
+        for (int i=0; i<5; i++)
+        {
+            if (score >= starThresholds[i])
+                numStars++;
+        }
+        endLevelCanvas.DisplayStars(numStars);
     }
 }
