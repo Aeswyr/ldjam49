@@ -16,14 +16,19 @@ namespace Unstable
 
         #region ITile
 
-        public void ApplyEffect()
-        {
-            Debug.Log("you are on ice!");
-        }
-
         public Tile.Type GetTileType()
         {
             return _tile.GetTileType();
+        }
+
+        public void OnEnter(ref Slidable slidable)
+        {
+            slidable.MultiplySlideSpeed(2f);
+        }
+
+        public void OnExit(ref Slidable slidable)
+        {
+            slidable.MultiplySlideSpeed(0.5f);
         }
 
         #endregion

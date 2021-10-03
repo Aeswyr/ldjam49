@@ -26,6 +26,10 @@ namespace Unstable
         private float m_fallBuffer = 0.1f;
         [SerializeField]
         private float m_fallSpeed = 20f;
+        [SerializeField]
+        private float m_shuntSlideSpeed = 20;
+        [SerializeField]
+        private float m_shuntMinTime = 1f;
 
         // Debugging
         [SerializeField]
@@ -35,7 +39,12 @@ namespace Unstable
 
         private CapsuleCollider m_collider;
         private GameObject m_projection;
+        private Slidable m_slidable;
         private Tile m_currTile;
+        private Tile m_prevTile;
+        private bool m_shunting;
+        private Vector3 m_shuntDir;
+        private float m_shuntCountdown;
 
         private bool m_locked;
 
@@ -45,7 +54,9 @@ namespace Unstable
         {
             m_collider = this.GetComponent<CapsuleCollider>();
             m_projection = Instantiate(m_projectionPrefab, this.transform.parent);
+            m_slidable = this.GetComponent<Slidable>();
             m_locked = false;
+            m_shunting = false;
         }
 
         /// <summary>
@@ -69,24 +80,35 @@ namespace Unstable
 
             if (m_currTile != null)
             {
-                Tile.Type type = m_currTile.GetTileType();
-
-                switch (type)
+                if (m_prevTile == null)
                 {
-                    case (Tile.Type.wood):
-                        m_currTile.GetComponent<WoodTile>().ApplyEffect();
-                        break;
-                    case (Tile.Type.ice):
-                        m_currTile.GetComponent<IceTile>().ApplyEffect();
-                        break;
-                    case (Tile.Type.puddle):
-                        m_currTile.GetComponent<PuddleTile>().ApplyEffect();
-                        break;
-                    default:
-                        break;
+                    EnterCurrTile();
                 }
+                else if (m_currTile != m_prevTile)
+                {
+                    ExitPrevTile();
+
+                    EnterCurrTile();
+                }
+
+                m_prevTile = m_currTile;
             }
 
+            if (m_shunting)
+            {
+                ShuntSlide();
+
+                m_shuntCountdown -= Time.deltaTime;
+
+                if (m_shuntCountdown <= 0)
+                {
+                    EndShunt();
+                }
+
+                // return; //todo: remove this to add complex movement functionality
+            }
+
+            // default slide behavior
             Vector3 boardAngles = m_board.transform.rotation.eulerAngles;
 
             SlideHorizontal(ref boardAngles);
@@ -193,7 +215,7 @@ namespace Unstable
 
             Vector3 dir = m_projection.transform.position - this.transform.position;
 
-            Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
+            // Debug.DrawLine(transform.position, m_projection.transform.position + dir, Color.blue);
 
             RaycastHit[] hits;
 
@@ -248,6 +270,71 @@ namespace Unstable
             Slide(ref boardAngles, AngleDir.z);
         }
 
+        private void ShuntSlide()
+        {
+            // slide toward ShuntDir
+
+            Vector3 rawMovement = new Vector3(0, 0, 0);
+            Vector3 rawDir = m_shuntDir;
+
+
+            // x rotation correlates to z movement and vice versa
+
+            rawMovement = rawDir * m_shuntSlideSpeed * Time.deltaTime;
+
+            // project the new transform.position
+            m_projection.transform.position = this.transform.position;
+
+            Vector3 extents = m_collider.bounds.extents;
+
+            m_projection.transform.localPosition += m_skinWidth * rawDir * ((extents.x + extents.z) / 2);
+
+            // raycast for obstacles
+            Vector3 adjustedMovement = rawMovement;
+
+            Vector3 dir = m_projection.transform.position - this.transform.position;
+
+            Debug.DrawLine(transform.position, m_projection.transform.position + dir * 50, Color.blue);
+
+            RaycastHit[] hits;
+
+            hits = Physics.RaycastAll(m_projection.transform.position, dir, dir.magnitude);
+
+            RaycastHit closestHit = new RaycastHit();
+
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Barrier"))
+                {
+                    continue;
+                }
+
+                if (hit.Equals(hits[0]))
+                {
+                    closestHit = hit;
+                }
+                else if (hit.distance < closestHit.distance)
+                {
+                    closestHit = hit;
+                }
+            }
+
+            // adjust movement if obstacle would be hit
+            if (closestHit.collider != null)
+            {
+                Vector3 buffer = -dir.normalized * m_skinWidth;
+                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
+                adjustedMovement = newDest - transform.position;
+                adjustedMovement.y = 0;
+
+                // end shunt when collide with a barrier
+                EndShunt();
+            }
+
+            // TODO: make this Translate()
+            transform.localPosition += adjustedMovement;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -297,13 +384,83 @@ namespace Unstable
             RaycastHit hit;
             Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit);
 
-            if (hit.collider != null 
+            if (hit.collider != null
                 && (hit.collider.gameObject.layer == LayerMask.NameToLayer("Tile")))
             {
                 return hit.collider.gameObject.GetComponent<Tile>();
             }
 
             return null;
+        }
+
+        private void ExitPrevTile()
+        {
+            var prevType = m_prevTile.GetTileType();
+            switch (prevType)
+            {
+                case (Tile.Type.wood):
+                    // deregister wood effect
+                    m_prevTile.GetComponent<WoodTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.ice):
+                    // deregister ice effect
+                    m_prevTile.GetComponent<IceTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.puddle):
+                    // deregister puddle effect
+                    m_prevTile.GetComponent<PuddleTile>().OnExit(ref m_slidable);
+                    break;
+                case (Tile.Type.none):
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void EnterCurrTile()
+        {
+            var currType = m_currTile.GetTileType();
+            switch (currType)
+            {
+                case (Tile.Type.wood):
+                    // register wood effect
+                    m_currTile.GetComponent<WoodTile>().OnEnter(ref m_slidable);
+                    break;
+                case (Tile.Type.ice):
+                    // register ice effect
+                    m_currTile.GetComponent<IceTile>().OnEnter(ref m_slidable);
+                    break;
+                case (Tile.Type.puddle):
+                    // register puddle effect
+                    m_currTile.GetComponent<PuddleTile>().OnEnter(ref m_slidable);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void MultiplySlideSpeed(float factor)
+        {
+            m_slideSpeed *= factor;
+        }
+
+        public void Shunt()
+        {
+            m_shunting = true;
+            m_shuntCountdown = m_shuntMinTime;
+
+            // randomly generate a direction
+            float shuntX = Random.Range(-1f, 1f);
+            float shuntZ = Random.Range(-1f, 1f);
+
+            m_shuntDir = new Vector3(shuntX, 0, shuntZ);
+        }
+
+        public void EndShunt()
+        {
+            m_shunting = false;
+            m_shuntDir = Vector3.zero;
+            m_shuntCountdown = 0;
         }
 
         #endregion

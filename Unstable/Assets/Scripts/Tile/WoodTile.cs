@@ -16,14 +16,17 @@ namespace Unstable
 
         #region ITile
 
-        public void ApplyEffect()
-        {
-            Debug.Log("you are on wood.");
-        }
-
         public Tile.Type GetTileType()
         {
             return _tile.GetTileType();
+        }
+
+        public void OnEnter(ref Slidable slidable)
+        {
+        }
+
+        public void OnExit(ref Slidable slidable)
+        {
         }
 
         #endregion

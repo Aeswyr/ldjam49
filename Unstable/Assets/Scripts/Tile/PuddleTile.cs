@@ -17,14 +17,22 @@ namespace Unstable
 
         #region ITile
 
-        public void ApplyEffect()
-        {
-            Debug.Log("you are on a puddle :/");
-        }
-
         public Tile.Type GetTileType()
         {
             return _tile.GetTileType();
+        }
+
+        public void OnEnter(ref Slidable slidable)
+        {
+            slidable.Shunt();
+            slidable.MultiplySlideSpeed(0.5f);
+        }
+
+        public void OnExit(ref Slidable slidable)
+        {
+            // now called when timer ends / collision occurs
+            // slidable.EndShunt();
+            slidable.MultiplySlideSpeed(2f);
         }
 
         #endregion

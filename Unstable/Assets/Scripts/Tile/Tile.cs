@@ -11,7 +11,8 @@ namespace Unstable
         {
             wood,
             ice,
-            puddle
+            puddle,
+            none
         }
 
         [SerializeField]
@@ -24,7 +25,12 @@ namespace Unstable
             return m_type;
         }
 
-        public void ApplyEffect()
+        public void OnEnter(ref Slidable slidable)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnExit(ref Slidable slidable)
         {
             throw new System.NotImplementedException();
         }

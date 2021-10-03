@@ -8,6 +8,8 @@ namespace Unstable
     {
         Tile.Type GetTileType();
 
-        void ApplyEffect();
+        void OnEnter(ref Slidable slidable);
+
+        void OnExit(ref Slidable slidable);
     }
 }
