@@ -57,6 +57,9 @@ namespace Unstable
             m_slidable = this.GetComponent<Slidable>();
             m_locked = false;
             m_shunting = false;
+
+            if (m_board == null)
+                m_board = GameObject.Find("Board").GetComponent<BoardController>();
         }
 
         /// <summary>

@@ -656,6 +656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentFood: {fileID: 11400000, guid: 284673116e27d6c4bbf8bad7205b2637, type: 2}
+  foodDisplay: {fileID: 8927088752351497583}
   seatLocations:
   - {fileID: 391466233538820786}
   - {fileID: 604017026481192605}

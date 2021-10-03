@@ -32,7 +32,7 @@ public class SeatLocation : MonoBehaviour
         }
     }
 
-    public void SeatCustomer(Customer newCustomer, float timeTakenToEat)
+    public void SeatCustomer(Customer newCustomer)
     {
         if (isOccupied)
         {
@@ -42,7 +42,7 @@ public class SeatLocation : MonoBehaviour
 
         currCustomer = newCustomer;
 
-        eatTimer = timeTakenToEat;
+        eatTimer = newCustomer.EatRateInSecs();
         maxEatTime = eatTimer;
 
         isOccupied = true;
