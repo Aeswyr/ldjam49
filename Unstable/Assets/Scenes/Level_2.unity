@@ -1393,14 +1393,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customersToSpawn:
   - spawnTime: 1
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
+    desiredFood: {fileID: 11400000, guid: b6e133a2b90c8c54db1e656814eecae5, type: 2}
     timeTakenToEat: 3
   starThresholds:
+  - 20
+  - 30
+  - 45
   - 60
-  - 65
   - 70
-  - 75
-  - 80
   booths:
   - {fileID: 1635195380}
   - {fileID: 558555019}
@@ -2365,8 +2365,8 @@ Tilemap:
   - first: {x: 1, y: -2, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2625,8 +2625,8 @@ Tilemap:
   - first: {x: 1, y: -1, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2885,8 +2885,8 @@ Tilemap:
   - first: {x: 1, y: 0, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -3184,15 +3184,15 @@ Tilemap:
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 67
+  - m_RefCount: 64
     m_Data: {fileID: 11400000, guid: 25b7dac1d0a3dd84bab168e634c00ed0, type: 2}
-  - m_RefCount: 61
+  - m_RefCount: 64
     m_Data: {fileID: 11400000, guid: 7b05aed87d24a674f9a662aca920e5de, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 67
+  - m_RefCount: 64
     m_Data: {fileID: 6623730380747189143, guid: 13968fefe4ad3e643bc9b8c0c266ea21,
       type: 3}
-  - m_RefCount: 61
+  - m_RefCount: 64
     m_Data: {fileID: 4564998844612868550, guid: 13968fefe4ad3e643bc9b8c0c266ea21,
       type: 3}
   m_TileMatrixArray:
@@ -4204,7 +4204,7 @@ PrefabInstance:
         type: 3}
       propertyPath: currentFood
       value: 
-      objectReference: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309,
+      objectReference: {fileID: 11400000, guid: b6e133a2b90c8c54db1e656814eecae5,
         type: 2}
     - target: {fileID: 8927088752335221702, guid: f72f8aa12d4cc024c9e5506678d2dcb8,
         type: 3}
@@ -4265,7 +4265,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6d814ba9bfc859e409b61343b766abed,
+      objectReference: {fileID: 21300000, guid: 8117c4b483f24f24e8123fd94a62c2e5,
         type: 3}
     - target: {fileID: 8927088752351497583, guid: f72f8aa12d4cc024c9e5506678d2dcb8,
         type: 3}
