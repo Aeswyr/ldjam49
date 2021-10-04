@@ -1302,14 +1302,13 @@ MonoBehaviour:
   m_board: {fileID: 1110283363}
   m_slideSpeed: 3
   m_flatBuffer: 1.5
-  m_skinWidth: 0.5
+  m_skinWidth: 0.4
   m_steepMod: 15
   m_fallBuffer: 0.1
   m_fallSpeed: 20
   m_shuntSlideSpeed: 10
   m_shuntMinTime: 1
   m_ray_dimension: 3
-  m_barrierBuffer: 0.1
   m_projectionPrefab: {fileID: 492403744433118940, guid: e4ad7df72dfa96d46b9c2b38e3d29947,
     type: 3}
 --- !u!54 &485390463
@@ -1327,7 +1326,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!4 &497607439 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8750890101432473595, guid: af49f47f7744b18499ee5af3d2156591,

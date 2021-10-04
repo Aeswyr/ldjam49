@@ -19,7 +19,7 @@ namespace Unstable
         [SerializeField]
         private float m_flatBuffer = 1.5f; // how far tilted the board must be before this slides
         [SerializeField]
-        private float m_skinWidth = 0.5f;
+        private float m_skinWidth = 0.6f;
         [SerializeField]
         private float m_steepMod = 15;
         [SerializeField]
@@ -32,8 +32,6 @@ namespace Unstable
         private float m_shuntMinTime = 1f;
         [SerializeField]
         private int m_ray_dimension = 3;
-        [SerializeField]
-        private float m_barrierBuffer = .6f;
 
         // Debugging
         [SerializeField]
@@ -124,6 +122,10 @@ namespace Unstable
             SlideVertical(ref boardAngles);
         }
 
+        private void OnCollisionEnter(Collision collision)
+        {
+            Debug.Log("collided");
+        }
         #endregion
 
         #region Member Functions
@@ -202,13 +204,18 @@ namespace Unstable
             Vector3 adjustedMovement = rawMovement;
             Vector3 projectionDir = Vector3.zero;
 
+            // raycast line as far as movement
+
             // raycast for obstacles
             RaycastHit closestHit = CollisionRaycast(angleDir, rawDir, rawMovement, ref projectionDir);
 
+            // if raycast hits, trim movement down to collision point - skinWidth
             AdjustMovement(ref adjustedMovement, ref closestHit, false);
 
             // move to new position
-            transform.localPosition += adjustedMovement;
+            //transform.localPosition += adjustedMovement;
+
+            transform.Translate(adjustedMovement);
         }
 
         /// <summary>
@@ -257,15 +264,19 @@ namespace Unstable
             // adjust movement if obstacle would be hit
             if (closestHit.collider != null)
             {
-                Debug.Log("prev: " + adjustedMovement);
-                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position);
+                Debug.Log("collision");
+                /*
+                Vector3 newDest = // Physics.ClosestPoint(transform.position, closestHit.collider, closestHit.collider.transform.position, closestHit.collider.transform.rotation);
+                    closestHit.collider.ClosestPointOnBounds(transform.position);
                 Vector3 bufferDir = (this.transform.position - newDest).normalized;
-                bufferDir.y = 0;
-                Debug.Log("change: " + bufferDir * m_barrierBuffer);
-                adjustedMovement = newDest - transform.position + (bufferDir * m_barrierBuffer);
+                adjustedMovement = newDest - transform.position + (bufferDir * m_skinWidth);
                 adjustedMovement.y = 0;
 
-                Debug.Log("post: " + adjustedMovement);
+                adjustedMovement = Vector3.zero;
+                */
+                adjustedMovement *= -1;
+
+                
 
                 if (shunting)
                 {
