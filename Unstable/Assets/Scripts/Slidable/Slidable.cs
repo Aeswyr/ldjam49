@@ -258,8 +258,6 @@ namespace Unstable
             // adjust movement if obstacle would be hit
             if (closestHit.collider != null)
             {
-                Debug.Log("collision");
-                
                 /*
                 Vector3 newDest = // Physics.ClosestPoint(transform.position, closestHit.collider, closestHit.collider.transform.position, closestHit.collider.transform.rotation);
                     closestHit.collider.ClosestPointOnBounds(transform.position);
