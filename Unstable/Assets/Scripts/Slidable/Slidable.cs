@@ -210,16 +210,17 @@ namespace Unstable
             // if raycast hits, trim movement down to collision point - skinWidth
             AdjustMovement(ref adjustedMovement, ref closestHit, false);
 
-            if (optionalAnimator != null) {
-                float abs = Math.Abs(adjustedMovement.x);
-                Vector3 scl = optionalAnimator.transform.localScale;
-                optionalAnimator.SetFloat("v", abs);
-                optionalAnimator.transform.localScale.Set(2 * adjustedMovement.x / abs, scl.y, scl.z);
-            }
-
             // move to new position
             // transform.localPosition += adjustedMovement;
             transform.Translate(adjustedMovement);
+
+            if (optionalAnimator != null) {
+                Debug.Log("spd: " + adjustedMovement.x);
+                float abs = Math.Abs(adjustedMovement.x);
+                Vector3 scl = optionalAnimator.transform.localScale;
+                optionalAnimator.SetBool("slipping", abs > 0);
+                optionalAnimator.transform.localScale.Set(2 * adjustedMovement.x / abs, scl.y, scl.z);
+            }
         }
 
         /// <summary>
