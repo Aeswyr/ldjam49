@@ -99,7 +99,7 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: cff998e6c5131844b99b36ba369a0981,
     type: 2}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1449,7 +1449,7 @@ MonoBehaviour:
   - 115
   - 125
   - 135
-  - 160
+  - 150
   booths:
   - {fileID: 1635195380}
   - {fileID: 558555019}
