@@ -28,7 +28,9 @@ public class LevelSelectButton : MonoBehaviour
     public void Clicked()
     {
         if ((!isLocked) && (levelNumber + 1 < SceneManager.sceneCountInBuildSettings))
+        {
             SceneManager.LoadScene(levelNumber + 1);
+        }
         else
         {
             //Maybe play lock wiggle animation?
