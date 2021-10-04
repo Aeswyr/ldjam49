@@ -19,7 +19,7 @@ namespace Unstable
         [SerializeField]
         private float m_flatBuffer = 1.5f; // how far tilted the board must be before this slides
         [SerializeField]
-        private float m_skinWidth = 0.6f;
+        private float m_skinWidth = 0.4f;
         [SerializeField]
         private float m_steepMod = 15;
         [SerializeField]
@@ -27,7 +27,7 @@ namespace Unstable
         [SerializeField]
         private float m_fallSpeed = 20f;
         [SerializeField]
-        private float m_shuntSlideSpeed = 20;
+        private float m_shuntSlideSpeed = 10;
         [SerializeField]
         private float m_shuntMinTime = 1f;
         [SerializeField]
@@ -121,11 +121,6 @@ namespace Unstable
             SlideHorizontal(ref boardAngles);
             SlideVertical(ref boardAngles);
         }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            Debug.Log("collided");
-        }
         #endregion
 
         #region Member Functions
@@ -214,7 +209,6 @@ namespace Unstable
 
             // move to new position
             //transform.localPosition += adjustedMovement;
-
             transform.Translate(adjustedMovement);
         }
 
@@ -265,18 +259,16 @@ namespace Unstable
             if (closestHit.collider != null)
             {
                 Debug.Log("collision");
+                
                 /*
                 Vector3 newDest = // Physics.ClosestPoint(transform.position, closestHit.collider, closestHit.collider.transform.position, closestHit.collider.transform.rotation);
                     closestHit.collider.ClosestPointOnBounds(transform.position);
                 Vector3 bufferDir = (this.transform.position - newDest).normalized;
                 adjustedMovement = newDest - transform.position + (bufferDir * m_skinWidth);
                 adjustedMovement.y = 0;
-
-                adjustedMovement = Vector3.zero;
                 */
-                adjustedMovement *= -1;
 
-                
+                adjustedMovement = Vector3.zero;                
 
                 if (shunting)
                 {
@@ -343,6 +335,7 @@ namespace Unstable
                 ;
 
             Vector3 start = transform.position;
+            //start.y -= bounds.extents.y/2 - .2f;
             projectionVector = m_projection.transform.position - this.transform.position;
 
             Vector3 raySpacing = CalcRaySpacing();
@@ -359,24 +352,25 @@ namespace Unstable
 
             for (int i = 0; i < m_ray_dimension; ++i)
             {
-                if (i != 1) { continue; }
-
                 Ray collisionRay = new Ray(rayStarts + raySpacing * i, projectionVector.normalized);
 
                 Debug.DrawLine(collisionRay.origin, collisionRay.origin + collisionRay.direction * projectionVector.magnitude * 10, Color.blue);
 
                 RaycastHit hit;
 
-                float maxDistance = projectionVector.magnitude;
+                float maxDistance = (projectionVector.magnitude > m_skinWidth) ? projectionVector.magnitude : m_skinWidth;
                 Physics.Raycast(collisionRay, out hit, maxDistance, LayerMask.GetMask("Barrier"));
 
-                if (closestHit.collider == null)
+                if (hit.collider != null)
                 {
-                    closestHit = hit;
-                }
-                else if (hit.distance < closestHit.distance)
-                {
-                    closestHit = hit;
+                    if (closestHit.collider == null)
+                    {
+                        closestHit = hit;
+                    }
+                    else if (hit.distance < closestHit.distance)
+                    {
+                        closestHit = hit;
+                    }
                 }
             }
 
