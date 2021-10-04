@@ -27,12 +27,10 @@ public class LevelSelectButton : MonoBehaviour
     // Update is called once per frame
     public void Clicked()
     {
-        if (!isLocked)
+        if ((!isLocked) && (levelNumber + 1 < SceneManager.sceneCountInBuildSettings))
             SceneManager.LoadScene(levelNumber + 1);
         else
-        {
             //Maybe play lock wiggle animation?
-        }
     }
 
     public void UpdateVisuals()
