@@ -54,7 +54,14 @@ public class LevelController : MonoBehaviour
             //foodObjectCopy.RemoveAt(randFoodIndex);
         }
 
+        AudioSrcMgr.instance.PlayAudio("music_level", true);
+
         //SpawnCustomer(); 
+    }
+
+    private void OnDestroy()
+    {
+        AudioSrcMgr.instance.StopAudio();
     }
 
     public void OnValidate()
