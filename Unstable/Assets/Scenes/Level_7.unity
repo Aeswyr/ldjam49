@@ -2306,27 +2306,27 @@ MonoBehaviour:
   - spawnTime: 0.5
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 3
+  - spawnTime: 2
     desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 5
+  - spawnTime: 3.5
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 7
+  - spawnTime: 6
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 9
+  - spawnTime: 8
     desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 11
+  - spawnTime: 9.75
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
   starThresholds:
-  - 100
-  - 110
-  - 130
-  - 140
-  - 155
+  - 200
+  - 250
+  - 300
+  - 350
+  - 425
   booths:
   - {fileID: 1440690727}
   - {fileID: 1521938261}

@@ -99,7 +99,7 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: 33dd1ed29422bde49a8ee85d8baae556,
     type: 2}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -2960,6 +2960,9 @@ MonoBehaviour:
   - spawnTime: 0.5
     desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
     timeTakenToEat: 1.5
+  - spawnTime: 1
+    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
+    timeTakenToEat: 1.5
   - spawnTime: 3
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
@@ -2969,30 +2972,27 @@ MonoBehaviour:
   - spawnTime: 7
     desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 9
+  - spawnTime: 8.5
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 11
+  - spawnTime: 10
     desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 13
+  - spawnTime: 12
     desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 15
+  - spawnTime: 13.5
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
-  - spawnTime: 17
+  - spawnTime: 16
     desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 19
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
     timeTakenToEat: 1.5
   starThresholds:
-  - 100
-  - 110
-  - 130
-  - 140
-  - 155
+  - 500
+  - 600
+  - 650
+  - 700
+  - 750
   booths:
   - {fileID: 1883323993}
   - {fileID: 338647638}

@@ -99,7 +99,7 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: 60d3dd8148fbf4442b5250a83c7404f3,
     type: 2}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1475,18 +1475,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customersToSpawn:
-  - spawnTime: 0.5
-    desiredFood: {fileID: 11400000, guid: cdc3629b8ed2aa144a92cf0daf87933f, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 2
+  - spawnTime: 0
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
+    timeTakenToEat: 1.5
+  - spawnTime: 1.5
+    desiredFood: {fileID: 11400000, guid: cdc3629b8ed2aa144a92cf0daf87933f, type: 2}
     timeTakenToEat: 1.5
   starThresholds:
   - 100
   - 110
   - 130
   - 140
-  - 155
+  - 160
   booths:
   - {fileID: 1635195380}
   - {fileID: 1065821769}

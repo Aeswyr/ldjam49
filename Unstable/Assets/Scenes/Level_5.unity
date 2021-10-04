@@ -3682,11 +3682,11 @@ MonoBehaviour:
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
   starThresholds:
-  - 100
-  - 110
-  - 130
-  - 140
-  - 155
+  - 150
+  - 200
+  - 250
+  - 300
+  - 340
   booths:
   - {fileID: 1244115729}
   - {fileID: 912629622}
