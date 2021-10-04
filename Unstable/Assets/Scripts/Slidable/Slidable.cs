@@ -32,6 +32,8 @@ namespace Unstable
         private float m_shuntMinTime = 1f;
         [SerializeField]
         private int m_ray_dimension = 3;
+        [SerializeField]
+        private float m_barrierBuffer = .6f;
 
         // Debugging
         [SerializeField]
@@ -47,7 +49,6 @@ namespace Unstable
         private bool m_shunting;
         private Vector3 m_shuntDir;
         private float m_shuntCountdown;
-        private float m_barrierbuffer;
 
         private bool m_locked;
 
@@ -60,7 +61,6 @@ namespace Unstable
             m_slidable = this.GetComponent<Slidable>();
             m_locked = false;
             m_shunting = false;
-            m_barrierbuffer = m_skinWidth + 0.1f;
 
             // m_board = BoardController.instance;
 
@@ -166,7 +166,6 @@ namespace Unstable
             if (boardAngle >= 360 - m_board.GetRotationLimit())
             {
                 // tilt up/left
-
                 if (boardAngle <= 360 - m_flatBuffer)
                 {
                     switch (angleDir)
@@ -186,7 +185,6 @@ namespace Unstable
             else if (boardAngle >= 0 + m_flatBuffer)
             {
                 // tilt down/right
-
                 switch (angleDir)
                 {
                     case AngleDir.x:
@@ -243,10 +241,10 @@ namespace Unstable
             rawMovement = rawDir * m_shuntSlideSpeed * Time.deltaTime;
 
             Vector3 adjustedMovement = rawMovement;
-            Vector3 projectionDir = Vector3.zero;
+            Vector3 projectionVector = Vector3.zero;
 
             // raycast for obstacles
-            RaycastHit closestHit = CollisionRaycast(AngleDir.shunt, rawDir, rawMovement, ref projectionDir);
+            RaycastHit closestHit = CollisionRaycast(AngleDir.shunt, rawDir, rawMovement, ref projectionVector);
 
             AdjustMovement(ref adjustedMovement, ref closestHit, true);
 
@@ -259,16 +257,15 @@ namespace Unstable
             // adjust movement if obstacle would be hit
             if (closestHit.collider != null)
             {
-                /*
-                Vector3 buffer = -projectionDir.normalized * m_skinWidth;
-                Vector3 newDest = closestHit.collider.ClosestPoint(transform.position) + buffer;
-                adjustedMovement = newDest - transform.position;
-                adjustedMovement.y = 0;
-                */
+                Debug.Log("prev: " + adjustedMovement);
                 Vector3 newDest = closestHit.collider.ClosestPoint(transform.position);
                 Vector3 bufferDir = (this.transform.position - newDest).normalized;
-                adjustedMovement = newDest + (bufferDir * m_barrierbuffer) - transform.position;
+                bufferDir.y = 0;
+                Debug.Log("change: " + bufferDir * m_barrierBuffer);
+                adjustedMovement = newDest - transform.position + (bufferDir * m_barrierBuffer);
                 adjustedMovement.y = 0;
+
+                Debug.Log("post: " + adjustedMovement);
 
                 if (shunting)
                 {
@@ -302,7 +299,7 @@ namespace Unstable
             return steepness;
         }
 
-        private RaycastHit CollisionRaycast(AngleDir angleDir, Vector3 rawDir, Vector3 rawMovement, ref Vector3 projectionDir)
+        private RaycastHit CollisionRaycast(AngleDir angleDir, Vector3 rawDir, Vector3 rawMovement, ref Vector3 projectionVector)
         {
             // project the new transform.position
             m_projection.transform.position = this.transform.position;
@@ -330,18 +327,18 @@ namespace Unstable
 
             m_projection.transform.localPosition +=
                 // m_skinWidth * // buffer ratio
-                rawDir // direction facing
+                rawMovement // direction facing
                 // + extents // distance from middle to edge of collider
                 ;
 
             Vector3 start = transform.position;
-            projectionDir = m_projection.transform.position - this.transform.position;
+            projectionVector = m_projection.transform.position - this.transform.position;
 
             Vector3 raySpacing = CalcRaySpacing();
             Vector3 startMod = new Vector3(
-                bounds.extents.x * projectionDir.normalized.x,
-                bounds.extents.y * projectionDir.normalized.y,
-                bounds.extents.z * projectionDir.normalized.z
+                bounds.extents.x * projectionVector.normalized.x,
+                bounds.extents.y * projectionVector.normalized.y,
+                bounds.extents.z * projectionVector.normalized.z
                 );
             Vector3 rayStarts = start + startMod; // pushes all rays to lowest edge
 
@@ -351,13 +348,15 @@ namespace Unstable
 
             for (int i = 0; i < m_ray_dimension; ++i)
             {
-                Ray collisionRay = new Ray(rayStarts + raySpacing * i, projectionDir);
+                if (i != 1) { continue; }
 
-                Debug.DrawLine(collisionRay.origin, collisionRay.origin + collisionRay.direction, Color.blue);
+                Ray collisionRay = new Ray(rayStarts + raySpacing * i, projectionVector.normalized);
+
+                Debug.DrawLine(collisionRay.origin, collisionRay.origin + collisionRay.direction * projectionVector.magnitude * 10, Color.blue);
 
                 RaycastHit hit;
 
-                float maxDistance = projectionDir.magnitude;
+                float maxDistance = projectionVector.magnitude;
                 Physics.Raycast(collisionRay, out hit, maxDistance, LayerMask.GetMask("Barrier"));
 
                 if (closestHit.collider == null)

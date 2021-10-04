@@ -1309,6 +1309,7 @@ MonoBehaviour:
   m_shuntSlideSpeed: 10
   m_shuntMinTime: 1
   m_ray_dimension: 3
+  m_barrierBuffer: 0.1
   m_projectionPrefab: {fileID: 492403744433118940, guid: e4ad7df72dfa96d46b9c2b38e3d29947,
     type: 3}
 --- !u!54 &485390463
@@ -4883,6 +4884,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PuddleTile (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193794331368139758, guid: 9bfc149646e128e4eba9f24eb6417ca5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9bfc149646e128e4eba9f24eb6417ca5, type: 3}
