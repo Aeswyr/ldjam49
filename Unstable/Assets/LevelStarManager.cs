@@ -31,7 +31,7 @@ public class LevelStarManager : MonoBehaviour
     {
         levelStars[levelNum - 1].starsEarned = Mathf.Max(newStars, levelStars[levelNum -1].starsEarned);
 
-        if ((levelStars.Length > levelNum) && (newStars > 0)) //Unlock next level
+        if ((levelNum < levelStars.Length) && (newStars > 0) && (levelNum < (SceneManager.sceneCountInBuildSettings -2))) //Unlock next level
             levelStars[levelNum].isUnlocked = true;
     }
 }
