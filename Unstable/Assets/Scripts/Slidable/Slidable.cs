@@ -208,7 +208,7 @@ namespace Unstable
             AdjustMovement(ref adjustedMovement, ref closestHit, false);
 
             // move to new position
-            //transform.localPosition += adjustedMovement;
+            // transform.localPosition += adjustedMovement;
             transform.Translate(adjustedMovement);
         }
 
@@ -408,7 +408,10 @@ namespace Unstable
         private bool CheckFall()
         {
             RaycastHit hit;
-            Physics.SphereCast(transform.position, m_collider.bounds.extents.z + m_fallBuffer, Vector3.down, out hit, LayerMask.GetMask("Bounds"));
+
+            Ray fallRay = new Ray(transform.position, transform.up * -1);
+
+            Physics.SphereCast(fallRay.origin, m_collider.bounds.extents.z + m_fallBuffer, fallRay.direction, out hit, LayerMask.GetMask("Bounds"));
 
             if (hit.collider == null)
             {
@@ -427,7 +430,10 @@ namespace Unstable
         private Tile IdentifyCurrTile()
         {
             RaycastHit hit;
-            Physics.SphereCast(transform.position, m_collider.bounds.extents.z / 2, Vector3.down, out hit, LayerMask.GetMask("Tile"));
+
+            Ray fallRay = new Ray(transform.position, transform.up * -1);
+
+            Physics.SphereCast(fallRay.origin, m_collider.bounds.extents.z / 2, fallRay.direction, out hit, LayerMask.GetMask("Tile"));
 
             if (hit.collider != null)
             {
