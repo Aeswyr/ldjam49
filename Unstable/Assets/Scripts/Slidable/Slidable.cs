@@ -41,6 +41,8 @@ namespace Unstable
 
         private Rigidbody m_rb;
 
+        private static float HOVER_HEIGHT = 0.5f;
+
         private bool m_locked;
 
         private enum AngleDir
@@ -146,14 +148,16 @@ namespace Unstable
             // modify base movement according to steepness of tilt
             Vector3 steepifiedTiltMovement = new Vector3(
                 baseTiltMovement.x * (steepnessZ / m_steepMod),
-                .2f,
+                0,
                 baseTiltMovement.z * (steepnessX / m_steepMod)
                 );
 
             // raw movement is before movement before collisions
             Vector3 rawMovement = steepifiedTiltMovement;
 
-            m_rb.MovePosition(transform.position + rawMovement);
+            Vector3 newPosition = m_rb.position + transform.TransformDirection(rawMovement);
+
+            m_rb.MovePosition(newPosition);
         }
 
         private void AddTilt(ref Vector3 tiltDir, float boardAngle, AngleDir angleDir)

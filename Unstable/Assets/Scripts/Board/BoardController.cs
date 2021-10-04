@@ -68,7 +68,9 @@ namespace Unstable
             }
 
             // perform preliminary rotation
-            transform.Rotate(rotation * m_rotationSpeed * Time.deltaTime, Space.World);
+            transform.Rotate(rotation * m_rotationSpeed * Time.deltaTime, Space.World);            
+
+            // this.GetComponent<Rigidbody>().MoveRotation(Quaternion.Euler(rotation * m_rotationSpeed * Time.deltaTime));
 
             // Apply rotation limits
             ApplyRotationLimits();
