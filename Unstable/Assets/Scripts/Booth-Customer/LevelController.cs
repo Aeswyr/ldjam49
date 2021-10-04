@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unstable;
 
 public class LevelController : MonoBehaviour
 {
@@ -79,6 +80,7 @@ public class LevelController : MonoBehaviour
 
         GameObject newCustomer = Instantiate(customerPrefab, customerParent);
         newCustomer.transform.position = customerSpawnLocation.position;
+        AudioSrcMgr.instance.PlayOneShot("customer_spawn");
 
         //FoodObject foodToEat = foodObjects[Random.Range(0,foodObjects.Count)];
         //float eatTime = Random.Range(2f, 5f);
