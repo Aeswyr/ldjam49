@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ClickBasic
   m_EditorClassIdentifier: 
   m_id: click_basic
-  m_clip: {fileID: 8300000, guid: bfd5a072f04e2d34684a28e5c2f495b9, type: 3}
+  m_clip: {fileID: 8300000, guid: abb9169973119ad4eab1d9aa13da1567, type: 3}
   m_volume: 1
   m_pan: 0.5

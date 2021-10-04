@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unstable;
 
 public class Booth : MonoBehaviour
 {
@@ -75,6 +76,7 @@ public class Booth : MonoBehaviour
     public void FreeCustomer(Customer customer)
     {
         customer.transform.position = exitLocation.position;
+        AudioSrcMgr.instance.PlayOneShot("customer_drop");
         customer.DoneEating();
         levelController.CustomerFed(customer.PointsWorth());
     }

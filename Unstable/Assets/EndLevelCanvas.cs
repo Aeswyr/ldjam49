@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unstable;
 
 public class EndLevelCanvas : MonoBehaviour
 {
@@ -41,11 +42,13 @@ public class EndLevelCanvas : MonoBehaviour
 
     public void BackToLevelSelect()
     {
+        AudioSrcMgr.instance.PlayOneShot("click_basic");
         SceneManager.LoadScene(1);
     }
 
     public void RetryLevel()
     {
+        AudioSrcMgr.instance.PlayOneShot("click_basic");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -53,7 +56,10 @@ public class EndLevelCanvas : MonoBehaviour
     {
         int nextLevelIndex = levelNum + 2;
         if (nextLevelIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            AudioSrcMgr.instance.PlayOneShot("click_basic");
             SceneManager.LoadScene(nextLevelIndex);
+        }
         else
             SceneManager.LoadScene(1); //Failsafe, go to level select
     }

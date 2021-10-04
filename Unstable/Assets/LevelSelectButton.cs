@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unstable;
 
 public class LevelSelectButton : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class LevelSelectButton : MonoBehaviour
     {
         if ((!isLocked) && (levelNumber + 1 < SceneManager.sceneCountInBuildSettings))
         {
+            AudioSrcMgr.instance.PlayOneShot("click_basic");
             SceneManager.LoadScene(levelNumber + 1);
         }
         else
