@@ -620,7 +620,7 @@ Transform:
   m_GameObject: {fileID: 8087909275978434696}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.5, z: 3.58}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 6712477848432920261}
   - {fileID: 4792675699142609280}
@@ -655,12 +655,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c72c03e19c6854647b1e970125c317e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFood: {fileID: 11400000, guid: 284673116e27d6c4bbf8bad7205b2637, type: 2}
+  currentFood: {fileID: 0}
   foodDisplay: {fileID: 8927088752351497583}
   seatLocations:
   - {fileID: 391466233538820786}
   - {fileID: 604017026481192605}
-  eatDuration: 3
   exitLocation: {fileID: 8927088752036614872}
 --- !u!1 &8378722153756155033
 GameObject:
@@ -893,7 +892,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8927088753383439700
