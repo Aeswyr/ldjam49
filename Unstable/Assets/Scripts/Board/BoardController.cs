@@ -28,7 +28,7 @@ namespace Unstable
         /// <summary>
         /// Update is called once per frame
         /// </summary>
-        private void Update()
+        private void FixedUpdate()
         {
             RotateBoard();
         }
