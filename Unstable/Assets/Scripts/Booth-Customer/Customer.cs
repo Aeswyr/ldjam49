@@ -48,7 +48,7 @@ public class Customer : MonoBehaviour
     void Update()
     {
         if (status == customerStatus.hungry)
-            pointsWorth -= Time.deltaTime * 10;
+            pointsWorth -= Mathf.Max(0,Time.deltaTime * 10);
     }
 
     public void StartEating()
