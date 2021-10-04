@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Unstable
 {
@@ -14,6 +15,8 @@ namespace Unstable
 
         [SerializeField]
         private BoardController m_board;
+        [SerializeField]
+        private Animator optionalAnimator;
         [SerializeField]
         private float m_slideSpeed = 3;
         [SerializeField]
@@ -206,6 +209,13 @@ namespace Unstable
 
             // if raycast hits, trim movement down to collision point - skinWidth
             AdjustMovement(ref adjustedMovement, ref closestHit, false);
+
+            if (optionalAnimator != null) {
+                float abs = Math.Abs(adjustedMovement.x);
+                Vector3 scl = optionalAnimator.transform.localScale;
+                optionalAnimator.SetFloat("v", abs);
+                optionalAnimator.transform.localScale.Set(2 * adjustedMovement.x / abs, scl.y, scl.z);
+            }
 
             // move to new position
             // transform.localPosition += adjustedMovement;
@@ -500,8 +510,8 @@ namespace Unstable
             m_shuntCountdown = m_shuntMinTime;
 
             // randomly generate a direction
-            float shuntX = Random.Range(-1f, 1f);
-            float shuntZ = Random.Range(-1f, 1f);
+            float shuntX = UnityEngine.Random.Range(-1f, 1f);
+            float shuntZ = UnityEngine.Random.Range(-1f, 1f);
 
             m_shuntDir = new Vector3(shuntX, 0, shuntZ);
         }

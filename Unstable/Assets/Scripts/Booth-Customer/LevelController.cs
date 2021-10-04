@@ -54,6 +54,8 @@ public class LevelController : MonoBehaviour
             //foodObjectCopy.RemoveAt(randFoodIndex);
         }
 
+        customersToSpawn.Sort((a, b) => a.spawnTime.CompareTo(b.spawnTime));
+
         AudioSrcMgr.instance.PlayAudio("music_level", true);
 
         //SpawnCustomer(); 
@@ -64,10 +66,10 @@ public class LevelController : MonoBehaviour
         AudioSrcMgr.instance.StopAudio();
     }
 
-    public void OnValidate()
+    /*public void OnValidate()
     {
         customersToSpawn.Sort((a, b) => a.spawnTime.CompareTo(b.spawnTime));
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
