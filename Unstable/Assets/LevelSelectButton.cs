@@ -30,13 +30,15 @@ public class LevelSelectButton : MonoBehaviour
         if ((!isLocked) && (levelNumber + 1 < SceneManager.sceneCountInBuildSettings))
             SceneManager.LoadScene(levelNumber + 1);
         else
+        {
             //Maybe play lock wiggle animation?
+        }
     }
 
     public void UpdateVisuals()
     {
         lockOverlay.SetActive(isLocked);
-        ShowStars(); 
+        ShowStars();
     }
 
     public void ShowStars()
