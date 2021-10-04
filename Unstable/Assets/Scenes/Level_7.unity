@@ -2202,34 +2202,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customersToSpawn:
   - spawnTime: 0.5
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
+    desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
   - spawnTime: 3
-    desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
+    desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
     timeTakenToEat: 1.5
   - spawnTime: 5
-    desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
+    desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
   - spawnTime: 7
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
+    desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
     timeTakenToEat: 1.5
   - spawnTime: 9
-    desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
+    desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
     timeTakenToEat: 1.5
   - spawnTime: 11
-    desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 13
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 15
     desiredFood: {fileID: 11400000, guid: dcbdf8b6d23ab01458db5d5d96bab670, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 17
-    desiredFood: {fileID: 11400000, guid: d331eb25d2605614283edd867484a6c8, type: 2}
-    timeTakenToEat: 1.5
-  - spawnTime: 19
-    desiredFood: {fileID: 11400000, guid: abf71e4d8e9472740a8e302feab0d309, type: 2}
     timeTakenToEat: 1.5
   starThresholds:
   - 100
